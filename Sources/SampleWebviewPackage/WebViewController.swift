@@ -156,7 +156,7 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.actInd?.stopAnimating()
         self.actInd?.isHidden = true
-        if (webView.url?.path.contains("webview_close.html"))!{
+        if (webView.url?.path.contains("webview_close"))!{
             
         }
     }
