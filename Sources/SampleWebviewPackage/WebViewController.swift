@@ -19,28 +19,40 @@ public class WebViewController: UIViewController {
     @objc var webView : WKWebView = WKWebView()
     var actInd: UIActivityIndicatorView?
     public var delegate : WebViewControllerDelegate?
-    public var customBackButton : UIButton?
     public var urlTxt = ""
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.presentationController?.presentedView?.gestureRecognizers?[0].isEnabled = false
-        self.addBackButton()
+        self.setupNavBar()
         self.addWebview()
     }
     
-    func addBackButton() {
-        if let customBackButton = self.customBackButton {
-            customBackButton.addTarget(self, action: #selector(self.backAction(_:)), for: .touchUpInside)
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: customBackButton)
+    func setupNavBar() {
+        self.navigationItem.title = "Web View"
+        
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.white
+            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black,
+                                              NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)]
+            self.navigationController?.navigationBar.standardAppearance = appearance
+            self.navigationController?.navigationBar.scrollEdgeAppearance = self.navigationController?.navigationBar.standardAppearance
         }
         else {
-            let backButton = UIButton(type: .custom)
-            backButton.setTitle("Back", for: .normal)
-            backButton.setTitleColor(backButton.tintColor, for: .normal)
-            backButton.addTarget(self, action: #selector(self.backAction(_:)), for: .touchUpInside)
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+            self.navigationController?.navigationBar.barTintColor = UIColor.white
+            self.navigationController?.navigationBar.backgroundColor = UIColor.white
         }
+        
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.titleTextAttributes =
+        [NSAttributedString.Key.foregroundColor : UIColor.black,
+         NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)]
+        
+        let backBtn = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .done, target: self, action: #selector(self.backAction(_:)))
+        backBtn.tintColor = .black
+        self.navigationItem.leftBarButtonItem = backBtn
     }
     
     @objc func backAction(_ sender: UIButton) {
