@@ -1,6 +1,12 @@
-public struct SampleWebviewPackage {
-    public private(set) var text = "Hello, World!"
+import SwiftUI
 
-    public init() {
+extension View {
+    public func centreHorizontally() -> some View {
+        return HStack {
+            Spacer()
+            self
+            Spacer()
+        }
     }
 }
+
