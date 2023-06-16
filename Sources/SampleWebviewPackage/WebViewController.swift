@@ -117,11 +117,12 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         self.actInd?.startAnimating()
         self.actInd?.isHidden = false
+        print("webview url \(webView.url?.absoluteString ?? "")")
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
-        print("webview url \(url)")
+        print("webview navigation url \(url)")
         if url.absoluteString.contains("webview_success") {
             decisionHandler(.cancel)
             let _ = self.navigationController?.popViewController(animated: true)
