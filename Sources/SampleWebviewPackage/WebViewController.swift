@@ -30,26 +30,6 @@ public class WebViewController: UIViewController {
     
     func setupNavBar() {
         self.navigationItem.title = "Web View"
-        
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.white
-            appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black,
-                                              NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)]
-            self.navigationController?.navigationBar.standardAppearance = appearance
-            self.navigationController?.navigationBar.scrollEdgeAppearance = self.navigationController?.navigationBar.standardAppearance
-        }
-        else {
-            self.navigationController?.navigationBar.barTintColor = UIColor.white
-            self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        }
-        
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.titleTextAttributes =
-        [NSAttributedString.Key.foregroundColor : UIColor.black,
-         NSAttributedString.Key.font : UIFont.systemFont(ofSize: 18)]
-        
         let backBtn = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .done, target: self, action: #selector(self.backAction(_:)))
         backBtn.tintColor = .black
         self.navigationItem.leftBarButtonItem = backBtn
@@ -66,7 +46,6 @@ public class WebViewController: UIViewController {
             self.navigationController?.presentationController?.presentedView?.gestureRecognizers?[0].isEnabled = false
             self.createWebView()
         }
-        self.loadWebView()
     }
     
     @objc func createWebView() {
@@ -101,6 +80,8 @@ public class WebViewController: UIViewController {
         viewBack.addSubview(self.webView)
         self.view.addSubview(viewBack)
         self.showActivityIndicatory(uiView: self.webView)
+        
+        self.loadWebView()
     }
     
     @objc func loadWebView() {
