@@ -87,7 +87,7 @@ public class WebViewController: UIViewController {
     @objc func loadWebView() {
         if let newurl = URL(string: self.urlTxt) {
             let newrequest = URLRequest(url: newurl)
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.main.async {
                 self.webView.load(newrequest)
             }
         }
