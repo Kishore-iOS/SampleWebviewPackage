@@ -2,7 +2,7 @@
 
 ## Instalation
 
-To install this package, import `url here` in SPM.
+To install this package, import `https://github.com/Kishore-iOS/SampleWebviewPackage.git` in SPM.
 
 ## Usage example
 
