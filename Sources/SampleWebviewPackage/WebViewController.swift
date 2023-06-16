@@ -117,25 +117,12 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         self.actInd?.startAnimating()
         self.actInd?.isHidden = false
-        print("webview url \(webView.url?.absoluteString ?? "")")
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
-        print("webview navigation url \(url)")
-        if url.absoluteString.contains("webview_success") {
-            decisionHandler(.cancel)
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapSuccess()
-        }
-        else if url.absoluteString.contains("webview_fail") {
-            decisionHandler(.cancel)
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapFail()
-        }
-        else {
-            decisionHandler(.allow)
-        }
+        print("webview navigation url: \(url)")
+        decisionHandler(.allow)
     }
     
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -174,6 +161,20 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
         else if (webView.url?.path.contains("webview_success"))!{
             let _ = self.navigationController?.popViewController(animated: true)
             self.delegate?.didTapSuccess()
+        }
+    }
+    
+    public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        if let url = webView.url {
+            print("webview didCommit url: \(url)")
+            if (url.absoluteString.contains("webview_fail")) {
+                let _ = self.navigationController?.popViewController(animated: true)
+                self.delegate?.didTapFail()
+            }
+            else if (url.absoluteString.contains("webview_success")) {
+                let _ = self.navigationController?.popViewController(animated: true)
+                self.delegate?.didTapSuccess()
+            }
         }
     }
 }
