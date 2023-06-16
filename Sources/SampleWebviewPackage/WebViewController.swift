@@ -87,7 +87,7 @@ public class WebViewController: UIViewController {
     @objc func loadWebView() {
         if let newurl = URL(string: self.urlTxt) {
             let newrequest = URLRequest(url: newurl)
-            DispatchQueue.main.async {
+            DispatchQueue.global(qos: .background).async {
                 self.webView.load(newrequest)
             }
         }
@@ -149,8 +149,13 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.actInd?.stopAnimating()
         self.actInd?.isHidden = true
-        if (webView.url?.path.contains("webview_close"))!{
+        if (webView.url?.path.contains("webview_fail"))!{
+            let _ = self.navigationController?.popViewController(animated: true)
             self.delegate?.didTapFail()
+        }
+        else if (webView.url?.path.contains("webview_success"))!{
+            let _ = self.navigationController?.popViewController(animated: true)
+            self.delegate?.didTapSuccess()
         }
     }
 }
