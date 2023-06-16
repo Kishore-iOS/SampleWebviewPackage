@@ -64,7 +64,6 @@ public class WebViewController: UIViewController {
         self.webView.frame = CGRect(x: 0, y: 0, width: viewBack.bounds.width, height: viewBack.bounds.height)
         self.webView.navigationDelegate = self
         self.webView.uiDelegate = self
-        self.webView.navigationDelegate = self
         self.webView.backgroundColor = .white
         self.webView.scrollView.delegate = self
         self.webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -121,8 +120,20 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
             decisionHandler(.allow)
             return
         }
-        print("webview navigation url: \(url)")
-        decisionHandler(.allow)
+        print("webview url: \(url)")
+        if (url.absoluteString.contains("webview_fail")) {
+            decisionHandler(.cancel)
+            let _ = self.navigationController?.popViewController(animated: true)
+            self.delegate?.didTapFail()
+        }
+        else if (url.absoluteString.contains("webview_success")) {
+            decisionHandler(.cancel)
+            let _ = self.navigationController?.popViewController(animated: true)
+            self.delegate?.didTapSuccess()
+        }
+        else {
+            decisionHandler(.allow)
+        }
     }
     
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -154,28 +165,5 @@ extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDe
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.actInd?.stopAnimating()
         self.actInd?.isHidden = true
-        if (webView.url?.path.contains("webview_fail"))!{
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapFail()
-        }
-        else if (webView.url?.path.contains("webview_success"))!{
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapSuccess()
-        }
-    }
-    
-    public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-        if let url = webView.url {
-            print("webview didCommit url: \(url)")
-            if (url.absoluteString.contains("webview_fail")) {
-                let _ = self.navigationController?.popViewController(animated: true)
-                self.delegate?.didTapFail()
-            }
-            else if (url.absoluteString.contains("webview_success")) {
-                let _ = self.navigationController?.popViewController(animated: true)
-                self.delegate?.didTapSuccess()
-            }
-        }
     }
 }
-
