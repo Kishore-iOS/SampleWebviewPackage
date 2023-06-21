@@ -46,6 +46,10 @@ public class WebViewController: UIViewController {
             self.navigationController?.presentationController?.presentedView?.gestureRecognizers?[0].isEnabled = false
             self.createWebView()
         }
+        
+        DispatchQueue.global(qos: .background).async {
+            self.loadWebView()
+        }
     }
     
     @objc func createWebView() {
@@ -79,8 +83,6 @@ public class WebViewController: UIViewController {
         viewBack.addSubview(self.webView)
         self.view.addSubview(viewBack)
         self.showActivityIndicatory(uiView: self.webView)
-        
-        self.loadWebView()
     }
     
     @objc func loadWebView() {
