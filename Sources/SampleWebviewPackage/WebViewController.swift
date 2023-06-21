@@ -82,7 +82,7 @@ public class WebViewController: UIViewController {
         self.webView.scrollView.maximumZoomScale = 1.0;
         viewBack.addSubview(self.webView)
         self.view.addSubview(viewBack)
-        self.showActivityIndicatory(uiView: self.webView)
+        self.addActivityIndicatory(uiView: self.webView)
     }
     
     @objc func loadWebView() {
@@ -101,7 +101,7 @@ public class WebViewController: UIViewController {
         }
     }
     
-    func showActivityIndicatory(uiView: UIView) {
+    func addActivityIndicatory(uiView: UIView) {
         self.actInd = UIActivityIndicatorView()
         self.actInd?.frame = CGRect(x: 0.0, y: -20, width: 40.0, height: 40.0);
         self.actInd?.center = uiView.center
@@ -109,7 +109,7 @@ public class WebViewController: UIViewController {
         self.actInd?.style = UIActivityIndicatorView.Style.medium
         self.actInd?.color = .black
         uiView.addSubview(self.actInd!)
-        self.actInd?.startAnimating()
+        self.actInd?.isHidden = true
     }
 }
 
