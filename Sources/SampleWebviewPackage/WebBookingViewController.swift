@@ -1,5 +1,5 @@
 //
-//  WebViewController.swift
+//  WebBookingViewController.swift
 //  
 //
 //  Created by Fuzionest on 16/06/23.
@@ -8,22 +8,20 @@
 import UIKit
 import WebKit
 
-public protocol WebViewControllerDelegate {
-    func didTapBack()
-    func didTapSuccess()
-    func didTapFail()
-    func didLoadFail(message: String)
+public protocol WebBookingDelegate {
+    func bookingSuccess(tripId: String, message: String)
+    func bookingFail(message: String)
+    func webViewFail(message: String)
+    func goBackFromWebview()
 }
 
-public class WebViewController: UIViewController {
+public class WebBookingViewController: UIViewController {
     @objc var webView : WKWebView = WKWebView()
-    var actInd: UIActivityIndicatorView?
-    public var delegate : WebViewControllerDelegate?
+    public var delegate : WebBookingDelegate?
     public var urlTxt = ""
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.presentationController?.presentedView?.gestureRecognizers?[0].isEnabled = false
         self.setupNavBar()
         self.addWebview()
     }
@@ -36,14 +34,12 @@ public class WebViewController: UIViewController {
     }
     
     @objc func backAction(_ sender: UIButton) {
-        self.delegate?.didTapBack()
-        self.dismiss(animated: true, completion: nil)
-        let _ = self.navigationController?.popViewController(animated: true)
+        self.delegate?.goBackFromWebview()
+        self.navigationController?.popViewController(animated: true)
     }
     
     private func addWebview() {
         DispatchQueue.main.async {
-            self.navigationController?.presentationController?.presentedView?.gestureRecognizers?[0].isEnabled = false
             self.createWebView()
         }
         
@@ -82,7 +78,6 @@ public class WebViewController: UIViewController {
         self.webView.scrollView.maximumZoomScale = 1.0;
         viewBack.addSubview(self.webView)
         self.view.addSubview(viewBack)
-        self.addActivityIndicatory(uiView: self.webView)
     }
     
     @objc func loadWebView() {
@@ -94,78 +89,67 @@ public class WebViewController: UIViewController {
         }
         else {
             DispatchQueue.main.async {
-                self.delegate?.didLoadFail(message: "Something went wrong!")
-                self.dismiss(animated: true, completion: nil)
-                let _ = self.navigationController?.popViewController(animated: true)
+                self.navigationController?.popViewController(animated: true)
+                self.delegate?.webViewFail(message: "Something went wrong!")
             }
         }
     }
-    
-    func addActivityIndicatory(uiView: UIView) {
-        self.actInd = UIActivityIndicatorView()
-        self.actInd?.frame = CGRect(x: 0.0, y: -20, width: 40.0, height: 40.0);
-        self.actInd?.center = uiView.center
-        self.actInd?.hidesWhenStopped = true
-        self.actInd?.style = UIActivityIndicatorView.Style.medium
-        self.actInd?.color = .black
-        uiView.addSubview(self.actInd!)
-        self.actInd?.isHidden = true
-    }
 }
 
-extension WebViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate {
+extension WebBookingViewController : WKNavigationDelegate, WKUIDelegate, UIScrollViewDelegate {
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        self.actInd?.startAnimating()
-        self.actInd?.isHidden = false
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
         }
-        print("webview url: \(url)")
-        if (url.absoluteString.contains("webview_fail")) {
-            decisionHandler(.cancel)
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapFail()
+        print("webview url 1: \(url.absoluteString)")
+        var tripId: String? = nil
+        var msg: String? = nil
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let queryItems = components.queryItems {
+            for queryItem in queryItems {
+                if queryItem.name == "tripId" {
+                    if let trip_id = queryItem.value {
+                        print("tripId: \(trip_id)")
+                        tripId = trip_id
+                    }
+                }
+                else if queryItem.name == "msg" {
+                    if let message = queryItem.value {
+                        print("msg: \(message)")
+                        msg = message
+                    }
+                }
+            }
         }
-        else if (url.absoluteString.contains("webview_success")) {
+
+        if (url.absoluteString.contains("wrong")) {
             decisionHandler(.cancel)
-            let _ = self.navigationController?.popViewController(animated: true)
-            self.delegate?.didTapSuccess()
+            self.navigationController?.popViewController(animated: true)
+            self.delegate?.bookingFail(message: msg ?? "Booking failed")
+        }
+        else if (url.absoluteString.contains("success")) {
+            decisionHandler(.cancel)
+            self.navigationController?.popViewController(animated: true)
+            self.delegate?.bookingSuccess(tripId: tripId ?? "", message: msg ?? "Booking success")
         }
         else {
             decisionHandler(.allow)
         }
     }
     
-    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        self.actInd?.startAnimating()
-        self.actInd?.isHidden = false
-    }
-    
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        self.actInd?.stopAnimating()
-        self.actInd?.isHidden = true
-        
         DispatchQueue.main.async {
-            self.delegate?.didLoadFail(message: "Network error!")
-            self.dismiss(animated: true, completion: nil)
-            let _ = self.navigationController?.popViewController(animated: true)
+            self.delegate?.webViewFail(message: "Network error!")
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
-    func webViewDidStartLoad(_ : WKWebView) {
-        self.actInd?.startAnimating()
-        self.actInd?.isHidden = false
-    }
-    
-    func webViewDidFinishLoad(_ : WKWebView){
-        self.actInd?.stopAnimating()
-        self.actInd?.isHidden = true
-    }
-    
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        self.actInd?.stopAnimating()
-        self.actInd?.isHidden = true
+        guard let url = webView.url else {
+            return
+        }
+        print("webview url 2: \(url.absoluteString)")
     }
 }
