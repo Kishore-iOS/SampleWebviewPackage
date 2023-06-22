@@ -12,7 +12,6 @@ public protocol WebBookingDelegate {
     func bookingSuccess(tripId: String, message: String)
     func bookingFail(message: String)
     func webViewFail(message: String)
-    func goBackFromWebview()
 }
 
 public class WebBookingViewController: UIViewController {
@@ -27,15 +26,19 @@ public class WebBookingViewController: UIViewController {
     }
     
     func setupNavBar() {
-        self.navigationItem.title = "Web View"
+        self.navigationItem.title = "Web Booking"
         let backBtn = UIBarButtonItem(image: UIImage(systemName: "chevron.left"), style: .done, target: self, action: #selector(self.backAction(_:)))
         backBtn.tintColor = .black
         self.navigationItem.leftBarButtonItem = backBtn
     }
     
     @objc func backAction(_ sender: UIButton) {
-        self.delegate?.goBackFromWebview()
-        self.navigationController?.popViewController(animated: true)
+        if self.webView.canGoBack {
+            self.webView.goBack()
+        }
+        else {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
     
     private func addWebview() {
@@ -58,7 +61,7 @@ public class WebBookingViewController: UIViewController {
         let viewBack = UIView()
         self.view.backgroundColor = .white
         viewBack.backgroundColor = .white
-        viewBack.frame = CGRect(x: 0, y: 40, width: self.view.frame.width, height: self.view.frame.height-60)
+        viewBack.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         
         self.webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         self.webView.frame = CGRect(x: 0, y: 0, width: viewBack.bounds.width, height: viewBack.bounds.height)
@@ -144,12 +147,5 @@ extension WebBookingViewController : WKNavigationDelegate, WKUIDelegate, UIScrol
             self.delegate?.webViewFail(message: "Network error!")
             self.navigationController?.popViewController(animated: true)
         }
-    }
-    
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        guard let url = webView.url else {
-            return
-        }
-        print("webview url 2: \(url.absoluteString)")
     }
 }
