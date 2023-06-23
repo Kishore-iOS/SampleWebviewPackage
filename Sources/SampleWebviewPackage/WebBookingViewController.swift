@@ -11,7 +11,7 @@ import WebKit
 public protocol WebBookingDelegate {
     func bookingSuccess(tripId: String, message: String)
     func bookingFail(message: String)
-    func webViewFail(message: String)
+    func webViewError(message: String)
 }
 
 public class WebBookingViewController: UIViewController {
@@ -93,7 +93,7 @@ public class WebBookingViewController: UIViewController {
         else {
             DispatchQueue.main.async {
                 self.navigationController?.popViewController(animated: true)
-                self.delegate?.webViewFail(message: "Something went wrong!")
+                self.delegate?.webViewError(message: "Something went wrong!")
             }
         }
     }
@@ -144,7 +144,7 @@ extension WebBookingViewController : WKNavigationDelegate, WKUIDelegate, UIScrol
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         DispatchQueue.main.async {
-            self.delegate?.webViewFail(message: "Network error!")
+            self.delegate?.webViewError(message: "Network error!")
             self.navigationController?.popViewController(animated: true)
         }
     }
