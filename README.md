@@ -1,4 +1,4 @@
-# RSL SDK Readme
+# RSL Package
 
 ## About
 
