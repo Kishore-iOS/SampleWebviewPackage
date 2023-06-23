@@ -12,8 +12,8 @@ To install this package, import `https://github.com/Kishore-iOS/SampleWebviewPac
 
 To use this Package follow these steps:
 1. Import our package in your main view controller `import SampleWebviewPackage`.
-2. Initialize and navigate to **WebBookingViewController** from your main view controller.
-3. Set the **WebBookingDelegate** to your main view controller for the handelling of success and failure.
+2. Initialize and navigate to `WebBookingViewController` from your main view controller.
+3. Set the `WebBookingDelegate` to your main view controller for the handelling of success and failure.
 
  Following is a sample swift code of how you can use our package in your application:
 
