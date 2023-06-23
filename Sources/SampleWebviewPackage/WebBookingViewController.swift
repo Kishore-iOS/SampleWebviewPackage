@@ -17,7 +17,7 @@ public protocol WebBookingDelegate {
 public class WebBookingViewController: UIViewController {
     @objc var webView : WKWebView = WKWebView()
     public var delegate : WebBookingDelegate?
-    public var urlTxt = ""
+    private let urlTxt = "https://booking.royalsmartlimousine.com/?type=3"
     
     public override func viewDidLoad() {
         super.viewDidLoad()
